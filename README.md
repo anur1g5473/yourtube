@@ -1,97 +1,185 @@
 <div align="center">
 
-# ▶️ YourTube
+# YourTube
 
-### A video-sharing and learning platform built on the original internship training project
+### A video-sharing and learning platform
 
-**Next.js · Express · MongoDB · Firebase**
+Discover, watch, save, and discuss video content—with creator tools, protected playback, membership billing, and private meetings.
+
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-149eca?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-5-333333?logo=express)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47a248?logo=mongodb)](https://www.mongodb.com/)
+[![Firebase](https://img.shields.io/badge/Auth-Firebase-ffca28?logo=firebase)](https://firebase.google.com/)
 
 </div>
 
-YourTube extends the existing training project with video discovery and playback, account security, memberships, downloads, moderated comments, and private video meetings. The original stack and project structure are retained.
+> **Project context:** YourTube extends the original internship training project. It keeps the established repository and technology stack while adding creator, security, media, community, and subscription capabilities.
 
-> **Project status:** Core features are implemented and the app builds locally. Provider-backed checks (including Razorpay test checkout, live JaaS meetings, and translation) still require provider credentials. Hosting and live end-to-end checks are not completed by this repository.
+---
 
-## ✨ Highlights
+## Contents
 
-- 🎬 **Video library and player** — explore and search videos, resume watch progress, view timeline previews, and switch among quality renditions supplied with an upload.
-- 🔐 **Private playback and downloads** — authenticated, short-lived playback links, premium-access checks, range streaming, and download quotas/history.
-- 💳 **Memberships** — plan comparison, payment-order creation and verification, billing history, cancellation, and entitlement checks.
-- 💬 **Comments and moderation** — replies, reactions, edit history, reports, moderator review, optional CAPTCHA, and configurable translation.
-- 🛡️ **Account security** — email/SMS verification flows, trusted-device/session management, security activity, and optional local GeoLite2 lookup.
-- 📹 **Meetings** — private Jitsi as a Service (JaaS) rooms with short-lived tokens and host controls.
-- 📱 **Responsive UI** — Next.js Pages Router frontend with desktop and mobile layouts.
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Technology](#technology)
+- [Run locally](#run-locally)
+- [Configuration](#configuration)
+- [Quality checks](#quality-checks)
+- [Deployment and media storage](#deployment-and-media-storage)
+- [Known constraints](#known-constraints)
+- [Project structure](#project-structure)
+- [Security notes](#security-notes)
 
-## 🧰 Technology
+## Overview
 
-| Area | Stack |
+YourTube is a full-stack video platform with a Next.js frontend, an Express API, and MongoDB persistence. Firebase Authentication establishes user identity; the backend uses that identity to issue and validate application sessions for protected operations.
+
+The application brings together a creator dashboard, video discovery and playback, watch history and saved lists, plan-based downloads, verified memberships, moderated conversations, account-security tools, and authenticated JaaS meeting rooms.
+
+### At a glance
+
+| | |
 | --- | --- |
-| Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS |
-| Backend | Node.js, Express 5 |
-| Database | MongoDB with Mongoose |
-| Identity | Firebase Authentication |
-| Integrations | Razorpay, Resend, Twilio Verify, Cloudflare Turnstile, JaaS, optional MaxMind GeoLite2 |
+| **Application** | YourTube |
+| **Frontend** | Next.js 15, React 19, TypeScript |
+| **API** | Node.js, Express 5 |
+| **Persistence** | MongoDB with Mongoose |
+| **Identity** | Firebase Authentication + server-validated app sessions |
+| **Media** | Local or configured server filesystem; MongoDB stores metadata |
+| **Frontend hosting** | Vercel-compatible |
+| **Backend hosting** | Node-compatible; Render configuration is included |
 
-## 📁 Repository layout
+## Features
 
-```text
-.
-├── server/             # Express API, MongoDB models, media and provider services
-├── yourtube/           # Next.js frontend
-├── start.bat           # Windows local launcher (MongoDB + API + frontend)
-├── README.md           # Project overview and setup
-└── server/render.yaml  # Render configuration with a persistent media disk
+### Video discovery and creator tools
+
+- Browse and search the video library, and open creator channels.
+- Upload MP4 videos from the creator dashboard, see upload progress, and refresh the list after upload.
+- View actual channel videos rather than sample/demo entries; switch between the Videos and About views.
+- Optionally provide separately encoded 360p, 480p, 720p, and 1080p renditions during upload.
+- Save videos to Watch later, like videos, review playback history, and play through saved lists in order.
+
+### Playback and media access
+
+- Custom HTML5 player with playback, seeking, volume, speed, fullscreen, theater mode, and Picture-in-Picture controls.
+- Captions when available, buffering and playback indicators, timeline frame previews, and quality selection for uploaded renditions.
+- Periodically saved playback position, resume support, and next-video behavior.
+- Short-lived, session-bound media access rather than a public static uploads directory.
+- Premium-video access checks and authenticated download authorization.
+
+### Memberships, billing, and downloads
+
+- Free, Bronze, Silver, and Gold plan comparison and subscription status.
+- Razorpay order creation and server-side payment verification before membership activation.
+- Billing history, transaction receipts, and receipt-delivery status.
+- Subscription-aware download quotas, download history, duplicate checks, and transfer auditing.
+
+> Razorpay is intended to be exercised with **Test Mode** credentials during development and evaluation. Never use a payment result supplied only by the browser to activate a plan.
+
+### Community and moderation
+
+- Comment threads with replies, reactions, sorting, and channel mentions.
+- Time-limited editing, soft deletion, and persisted edit history.
+- Comment reports with a moderator review queue and moderation actions.
+- Rate limits and abuse controls, with optional Cloudflare Turnstile after repeated posting attempts.
+- Optional translation-provider integration with cached language-specific results.
+
+### Account security and meetings
+
+- Firebase sign-in with additional email verification for new or untrusted login contexts.
+- Signed application sessions, trusted-device management, and security activity history.
+- Optional SMS verification through Twilio Verify.
+- Private Jitsi as a Service (JaaS) rooms with short-lived, room-scoped tokens and host moderation privileges.
+- Optional local GeoLite2 City lookup for approximate login-location information.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser[Next.js web client] -->|HTTPS / JSON / multipart| API[Express API]
+    Browser -->|Google sign-in| Firebase[Firebase Authentication]
+    Browser -->|Firebase ID token + app session| API
+    API --> Mongo[(MongoDB)]
+    API --> Media[(Configured media filesystem)]
+    API -. optional .-> Razorpay[Razorpay]
+    API -. optional .-> Resend[Resend]
+    API -. optional .-> Twilio[Twilio Verify]
+    API -. optional .-> Turnstile[Cloudflare Turnstile]
+    API -. optional .-> JaaS[Jitsi as a Service]
+    API -. optional .-> Translator[Translation provider]
 ```
 
-## 🚀 Run locally
+The browser authenticates with Firebase. For protected endpoints, it sends a Firebase ID token together with the YourTube application-session and device headers. The API validates those credentials, applies authorization and plan rules, and reads or writes MongoDB records. Video files are stored on the configured filesystem; MongoDB stores their metadata and references.
 
-### Requirements
+## Technology
 
+| Layer | Technologies |
+| --- | --- |
+| Frontend | Next.js 15 Pages Router, React 19, TypeScript, Tailwind CSS 4 |
+| UI | Radix UI primitives, Lucide icons, Sonner notifications |
+| API | Node.js, Express 5, Multer |
+| Database | MongoDB, Mongoose |
+| Authentication | Firebase Authentication, signed application sessions |
+| Payments | Razorpay |
+| Email / SMS | Resend, optional Twilio Verify |
+| Meeting provider | Jitsi as a Service |
+| Optional abuse / language / location providers | Cloudflare Turnstile, translation API, MaxMind GeoLite2 |
+
+## Run locally
+
+### Prerequisites
+
+- Windows, macOS, or Linux
 - Node.js and npm
-- MongoDB Community Server
-- A Firebase project for Google sign-in (needed for authentication; public pages can be previewed without signing in)
+- MongoDB Community Server or an accessible MongoDB deployment
+- A Firebase project for authenticated flows
 
-### Fast start on Windows
+### 1. Install dependencies
 
-1. Clone or download the repository.
-2. Install the project dependencies once:
+From the repository root:
 
-   ```powershell
-   cd server
-   npm ci
-   cd ..\yourtube
-   npm ci
-   ```
+```powershell
+cd server
+npm ci
+cd ..\yourtube
+npm ci
+cd ..
+```
 
-3. Double-click `start.bat` in the project root.
-4. Open **http://localhost:3000**. The backend runs on **http://localhost:5000**.
+### 2. Configure environment files
 
-The launcher tries to start `mongod` if it is on `PATH` or installed in a sibling `mongodb*` directory. If there is no `server/.env`, it uses the local MongoDB URL, the Firebase project configured by the frontend, and newly generated temporary session/media secrets for that run. MongoDB data is stored under `%LOCALAPPDATA%\YourTube\MongoData`. It does not overwrite existing environment files.
+Create local files from the checked-in examples:
 
-### Configure local environment manually
+```powershell
+Copy-Item server\.env.example server\.env
+Copy-Item yourtube\.env.example yourtube\.env.local
+```
 
-For repeatable configuration, create `server/.env` from `server/.env.example` and `yourtube/.env.local` from `yourtube/.env.example`.
+At minimum, set the backend values below in `server/.env`:
 
-Set at least the following values in `server/.env`:
-
-```env
+```dotenv
 PORT=5000
 DB_URL=mongodb://127.0.0.1:27017/yourtube
 FIREBASE_PROJECT_ID=your-firebase-project-id
-APP_SESSION_SECRET=use-a-random-secret-at-least-32-characters-long
-MEDIA_TOKEN_SECRET=use-a-different-random-secret-at-least-32-characters
+APP_SESSION_SECRET=replace-with-a-random-secret-at-least-32-characters
+MEDIA_TOKEN_SECRET=replace-with-a-different-random-secret-at-least-32-characters
 UPLOAD_DIR=./uploads
 ```
 
-Set the frontend API URL in `yourtube/.env.local`:
+Set the frontend API endpoint in `yourtube/.env.local`:
 
-```env
+```dotenv
 NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
 ```
 
-Configure the Firebase web app values in `yourtube/src/lib/firebase.js` to match the project ID used by the backend. In Firebase Authentication, enable Google sign-in and authorize `localhost` for local development.
+Configure the Firebase web app values in `yourtube/src/lib/firebase.js`. Use the same Firebase project ID in the backend configuration, enable the required sign-in provider, and authorize `localhost` in Firebase Authentication.
 
-Start MongoDB, then run the backend and frontend in separate terminals:
+### 3. Start MongoDB, API, and frontend
+
+Start MongoDB, then open two terminals at the repository root:
 
 ```powershell
 # Terminal 1
@@ -105,73 +193,128 @@ cd yourtube
 npm run dev
 ```
 
-The backend waits for MongoDB before listening. Check **http://localhost:5000/health** for `{"status":"ok"}` when the database is connected. If it reports `database_unavailable`, check MongoDB and `DB_URL`.
+Open **http://localhost:3000**. The API listens on **http://localhost:5000**. Confirm that MongoDB is available and check the API health endpoint:
 
-### Browse without provider credentials
+```powershell
+Invoke-RestMethod http://localhost:5000/health
+```
 
-You can open the frontend without configuring paid/external providers. Public pages can render, but actions that need the API require a running backend and MongoDB. Sign-in, protected playback/downloads, payment checkout, email/SMS delivery, CAPTCHA, translation, GeoIP, and JaaS each depend on their corresponding configuration.
+The backend waits for its database connection before listening. If the health endpoint reports that the database is unavailable, check that MongoDB is running and that `DB_URL` is correct.
 
-## 🧪 Tests and build
+### Windows launcher
 
-Run the backend tests:
+The repository also includes `start.bat` for local startup. It can start a local MongoDB process when it finds `mongod` in `PATH` or in a sibling `mongodb*` directory. When no backend `.env` exists, it uses a local MongoDB URL and temporary generated session/media secrets for that run. Local MongoDB data is stored under `%LOCALAPPDATA%\YourTube\MongoData`. Existing environment files are not overwritten.
+
+### Run without optional providers
+
+The frontend and backend can start without optional payment, SMS, CAPTCHA, translation, GeoIP, or JaaS credentials. Features that depend on an unconfigured provider will not be available. Authenticated flows also require working Firebase configuration and MongoDB connectivity.
+
+## Configuration
+
+Use `server/.env.example` and `yourtube/.env.example` as the source of truth for available environment variables. Provider secrets belong on the backend. Only variables explicitly prefixed `NEXT_PUBLIC_` should be exposed to the browser.
+
+| Capability | Configuration | Notes |
+| --- | --- | --- |
+| MongoDB | `DB_URL` | Local MongoDB or a hosted connection string. |
+| Identity and sessions | `FIREBASE_PROJECT_ID`, `APP_SESSION_SECRET` | Use the matching Firebase project; keep the session secret private. |
+| Protected media | `MEDIA_TOKEN_SECRET`, `UPLOAD_DIR` | Use a distinct secret; point `UPLOAD_DIR` at durable storage for production uploads. |
+| Razorpay | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | Use test credentials for evaluation; keep the secret on the backend. |
+| Security and receipt email | `RESEND_API_KEY`, `SECURITY_EMAIL_FROM`, optional `SUPPORT_EMAIL` | Sender identity must be accepted by the provider; production usually requires a verified domain. |
+| SMS verification | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID` | Optional Twilio Verify integration. |
+| Comment CAPTCHA | Backend `TURNSTILE_SECRET_KEY`; frontend `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Configure keys for the deployed frontend domain. |
+| Translation | `TRANSLATION_API_URL`, optional `TRANSLATION_API_KEY` | The provider must implement the API contract expected by the backend. |
+| JaaS meetings | `JITSI_APP_ID`, `JITSI_API_KEY_ID`, `JITSI_PRIVATE_KEY` | Store the private key only in backend secrets; encode newlines as `\n` when required by the host. |
+| Moderator access | `MODERATOR_EMAILS` | Comma-separated moderator account emails. |
+| Optional local GeoIP | `GEOIP_DB_PATH` | Path to a separately obtained GeoLite2 City `.mmdb`; do not commit the database file. |
+| Frontend API | `NEXT_PUBLIC_BACKEND_URL` | Public HTTPS URL of the backend in a deployed frontend build. |
+
+## Quality checks
+
+Run backend tests:
 
 ```powershell
 cd server
 npm test
 ```
 
-Build and type-check the frontend:
+Type-check the frontend:
 
 ```powershell
 cd yourtube
+npx tsc --noEmit
+```
+
+Build the production frontend:
+
+```powershell
 npm run build
 ```
 
-Run the backend directly in production mode with `npm start` from `server/`. Run the built frontend with `npm start` from `yourtube/`.
+For local production-mode startup, run `npm start` from `server/` and `yourtube/` after building the frontend.
 
-## 🔌 Optional integrations
+## Deployment and media storage
 
-Provider credentials belong in the backend environment unless marked public. Do not commit secrets, `.env` files, private keys, database connection strings, or GeoLite database files.
+The frontend and backend are separate deployable services from this repository:
 
-| Feature | Environment variables | Notes |
-| --- | --- | --- |
-| Razorpay test checkout | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | Use test-mode credentials for simulated payments. Never expose the secret to the browser. |
-| Security/receipt email | `RESEND_API_KEY`, `SECURITY_EMAIL_FROM`; optional `SUPPORT_EMAIL` | The sender address/domain must be verified with the email provider. |
-| SMS verification | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID` | Uses Twilio Verify; phone ownership must be verified before SMS sign-in. |
-| Comment CAPTCHA | Backend `TURNSTILE_SECRET_KEY`; frontend `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Use keys registered for the frontend domain. |
-| Translation | `TRANSLATION_API_URL`; optional `TRANSLATION_API_KEY` | Requires a provider compatible with the backend's expected API format. |
-| JaaS meetings | `JITSI_APP_ID`, `JITSI_API_KEY_ID`, `JITSI_PRIVATE_KEY` | Live room creation and calls require valid JaaS credentials. |
-| Moderator access | `MODERATOR_EMAILS` | Comma-separated account email addresses. |
-| Local GeoIP | `GEOIP_DB_PATH` | Points to a locally supplied GeoLite2 City `.mmdb` file; do not commit the database. |
+1. **Frontend:** deploy `yourtube/` to Vercel. Set `NEXT_PUBLIC_BACKEND_URL` to the backend's public HTTPS URL. This setting is embedded at build time, so rebuild/redeploy after changing it.
+2. **Backend:** deploy `server/` as a Node service with `npm ci` and `npm start`. Configure its environment variables in the host's secret manager.
+3. **Database:** configure a hosted MongoDB connection and permit network access from the backend host.
+4. **Identity:** add the deployed frontend hostname to the Firebase Authentication authorized domains and verify sign-in from the public domain.
+5. **Media:** configure durable storage for uploaded source videos and optional quality renditions.
 
-See `server/.env.example` and `yourtube/.env.example` for the complete variable list. Features whose provider is not configured may be unavailable; this is expected and does not prevent the app from starting.
+The included [`server/render.yaml`](server/render.yaml) describes a Render backend with a **1 GB persistent disk** mounted at `/var/data/yourtube`. This disk is a paid configuration, not part of Render Free. Render Free filesystems are ephemeral: media uploaded there may disappear after sleep, restart, or redeployment. MongoDB stores metadata, not the raw video files. A production deployment needs persistent disk or an object-storage service wired into the upload and playback paths.
 
-## ☁️ Hosting
+> **Deployment status:** The project owner reports that the frontend and backend are already deployed and synced. Add and verify the public demo URL here before final submission; this README does not guess or invent a URL.
 
-The frontend and backend can deploy from **one GitHub repository** as separate projects/services:
+## Known constraints
 
-- **Vercel:** import the repository, set the project Root Directory to `yourtube`, and configure `NEXT_PUBLIC_BACKEND_URL` to the public HTTPS API URL.
-- **Backend:** deploy `server/` as a Node service with `npm ci` and `npm start`. Set `DB_URL`, `FIREBASE_PROJECT_ID`, `APP_SESSION_SECRET`, and `MEDIA_TOKEN_SECRET` in the host's secret/environment settings.
-- **MongoDB:** use a hosted MongoDB connection string and allow the backend host to connect.
+- Live provider features require valid credentials and provider-side setup; code support alone does not prove a live provider flow.
+- A real JaaS multi-participant test needs at least two signed-in participants.
+- Translation requires a compatible translation provider endpoint and, if required, its API key.
+- Twilio SMS, Turnstile CAPTCHA, and GeoLite2 lookup are optional integrations.
+- GeoLite2 lookup requires a separately obtained `.mmdb` file. Never commit it.
+- Upload support validates MP4 files and limits each uploaded file to 100 MiB. Check proxy/host request-size limits as well.
+- Uploaded quality variants must be provided as separate encoded MP4 files; the application does not transcode videos.
+- Authorized playback and download controls enforce application access and quotas, but cannot prevent screen capture or copying by a user who can view the media.
+- Automatic recurring billing, DRM, and call recording are not provided.
 
-For a small free demo, Vercel Hobby, MongoDB Atlas Free, and Render Free are possible options, subject to their current terms and limits. Render Free services sleep when idle and have ephemeral filesystems; **videos uploaded to a free Render instance are not durable and can disappear after sleep, restart, or redeployment**. The supplied `server/render.yaml` requests a **1 GB persistent disk**, which is not the zero-cost Render Free setup. Durable video hosting needs paid persistent storage or an object-storage integration; Cloudflare R2 is not yet integrated into this project.
+## Project structure
 
-Add the deployed frontend domain to Firebase Authentication's authorized domains. After setting or changing `NEXT_PUBLIC_BACKEND_URL`, redeploy the frontend because this value is embedded during the Next.js build.
+```text
+.
+├── server/
+│   ├── controllers/      # API and business logic
+│   ├── middleware/       # Authentication and request controls
+│   ├── Modals/           # Mongoose models
+│   ├── routes/           # Express route registration
+│   ├── utils/            # Shared backend helpers
+│   ├── uploads/          # Local development media (do not commit uploads)
+│   ├── index.js          # API entry point
+│   └── render.yaml       # Optional Render persistent-disk blueprint
+├── yourtube/
+│   ├── src/
+│   │   ├── components/   # Shared interface components
+│   │   ├── lib/          # Firebase, API, and client helpers
+│   │   ├── pages/        # Next.js Pages Router routes
+│   │   └── styles/       # Global styles
+│   └── package.json
+├── start.bat             # Optional Windows development launcher
+└── README.md
+```
 
-## ✅ Before final submission
+## Security notes
 
-- [ ] Configure hosted MongoDB and deploy the backend and frontend.
-- [ ] Verify the public frontend and backend health endpoint.
-- [ ] Test Google sign-in and session verification on the deployed domains.
-- [ ] Complete Razorpay checkout using test credentials and verify premium entitlements.
-- [ ] Validate upload/playback with the chosen durable media-storage plan.
-- [ ] Test JaaS, translation, and other provider-backed features if required.
-- [ ] Check mobile/responsive behavior and keep the public demo available for evaluation.
+- Never commit `.env` files, private keys, payment secrets, database credentials, user uploads, or GeoLite2 databases.
+- Keep Firebase ID-token validation, application-session validation, payment verification, premium entitlements, and download authorization on the server.
+- Use separate, randomly generated values for `APP_SESSION_SECRET` and `MEDIA_TOKEN_SECRET`.
+- Use HTTPS and restrictive CORS settings for public deployments.
+- Use Razorpay Test Mode for testing; do not publish payment secrets or production credentials.
+- Review hosting provider storage, request-size, sleep, and bandwidth limits before accepting real uploads.
 
-## 📚 More information
+---
 
-- `server/.env.example` — backend settings and provider integrations.
-- `yourtube/.env.example` — frontend public environment variables.
-- `server/render.yaml` — Render disk-backed service configuration.
-- `todo.md` — implementation checklist.
-- Deployment guide (if provided separately): `GUIDE.md`.
+<div align="center">
+
+**Built as an extension of the original YourTube internship training project.**
+
+</div>
