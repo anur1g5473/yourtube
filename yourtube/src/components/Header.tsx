@@ -15,6 +15,7 @@ import Channeldialogue from "./channeldialogue";
 import { useRouter } from "next/router";
 import { useUser } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
+import styles from "./Header.module.css";
 
 const Header = () => {
   const { user, login, logout, handlegooglesignin } = useUser();
@@ -84,9 +85,9 @@ const Header = () => {
   };
 
   return (
-    <header className="flex items-center justify-between gap-3 border-b bg-white px-4 py-2 dark:bg-slate-950 dark:text-white">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
+    <header className={`${styles.header} border-b bg-white px-4 py-2 dark:bg-slate-950 dark:text-white`}>
+      <div className={`${styles.brand} flex items-center gap-4`}>
+        <Button variant="ghost" size="icon" className={styles.menuButton}>
           <Menu className="h-6 w-6" />
         </Button>
         <Link href="/" className="flex items-center gap-1">
@@ -99,7 +100,7 @@ const Header = () => {
           <span className="ml-1 text-xs text-gray-400">IN</span>
         </Link>
       </div>
-      <form onSubmit={handleSearch} className="mx-4 flex max-w-2xl flex-1 items-center gap-2">
+      <form onSubmit={handleSearch} className={`${styles.search} mx-4 flex max-w-2xl flex-1 items-center gap-2`}>
         <div className="flex flex-1">
           <Input
             type="search"
@@ -113,29 +114,31 @@ const Header = () => {
             <Search className="h-5 w-5" />
           </Button>
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button variant="ghost" size="icon" className={`rounded-full ${styles.microphone}`}>
           <Mic className="h-5 w-5" />
         </Button>
       </form>
-      <div className="flex items-center gap-2">
+      <div className={styles.headerActions}>
         <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
           {theme === "dark" ? <SunMedium className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
-        <Link href="/plans">
-          <Button variant="ghost" size="sm">Plans</Button>
-        </Link>
-        <Link href="/meetings" aria-label="Meetings" title="Meetings" className="inline-flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-gray-100">
-          <VideoIcon className="h-5 w-5" />
-          <span>Meetings</span>
-        </Link>
-        <Link href="/downloads">
-          <Button variant="ghost" size="sm">Downloads</Button>
-        </Link>
-        <Link href="/security">
-          <Button variant="ghost" size="sm" className="gap-1">
-            <ShieldCheck className="h-4 w-4" /> Security
-          </Button>
-        </Link>
+        <nav className={styles.desktopLinks} aria-label="Quick links">
+          <Link href="/plans">
+            <Button variant="ghost" size="sm">Plans</Button>
+          </Link>
+          <Link href="/meetings" aria-label="Meetings" title="Meetings" className="inline-flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-gray-100">
+            <VideoIcon className="h-5 w-5" />
+            <span>Meetings</span>
+          </Link>
+          <Link href="/downloads">
+            <Button variant="ghost" size="sm">Downloads</Button>
+          </Link>
+          <Link href="/security">
+            <Button variant="ghost" size="sm" className="gap-1">
+              <ShieldCheck className="h-4 w-4" /> Security
+            </Button>
+          </Link>
+        </nav>
         {user ? (
           <>
             <Button variant="ghost" size="icon">
@@ -173,6 +176,9 @@ const Header = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/downloads">Downloads</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/security">Security</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>

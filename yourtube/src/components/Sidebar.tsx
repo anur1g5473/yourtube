@@ -7,19 +7,23 @@ import {
   History,
   User,
   Video,
+  Download,
+  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import Channeldialogue from "./channeldialogue";
 import { useUser } from "@/lib/AuthContext";
+import styles from "./Sidebar.module.css";
 
 const Sidebar = () => {
   const { user } = useUser();
 
   const [isdialogeopen, setisdialogeopen] = useState(false);
   return (
-    <aside className="w-64 bg-white  border-r min-h-screen p-2">
+    <>
+    <aside className={`${styles.sidebar} bg-white dark:bg-slate-950`}>
       <nav className="space-y-1">
         <Link href="/">
           <Button variant="ghost" className="w-full justify-start">
@@ -90,12 +94,35 @@ const Sidebar = () => {
           </>
         )}
       </nav>
+    </aside>
+      <nav className={styles.mobileNav} aria-label="Mobile navigation">
+        <Link href="/" aria-label="Home">
+          <Home className="h-5 w-5" aria-hidden="true" />
+          <span>Home</span>
+        </Link>
+        <Link href="/explore" aria-label="Explore">
+          <Compass className="h-5 w-5" aria-hidden="true" />
+          <span>Explore</span>
+        </Link>
+        <Link href="/plans" aria-label="Plans and billing">
+          <CreditCard className="h-5 w-5" aria-hidden="true" />
+          <span>Plans</span>
+        </Link>
+        <Link href="/meetings" aria-label="Meetings">
+          <Video className="h-5 w-5" aria-hidden="true" />
+          <span>Meetings</span>
+        </Link>
+        <Link href="/downloads" aria-label="Downloads">
+          <Download className="h-5 w-5" aria-hidden="true" />
+          <span>Downloads</span>
+        </Link>
+      </nav>
       <Channeldialogue
         isopen={isdialogeopen}
         onclose={() => setisdialogeopen(false)}
         mode="create"
       />
-    </aside>
+      </>
   );
 };
 

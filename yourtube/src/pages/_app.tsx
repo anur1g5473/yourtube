@@ -11,9 +11,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Your-Tube Clone</title>
         <Header />
         <Toaster />
-        <div className="flex">
+        <div className="flex min-w-0 pb-16 md:pb-0">
           <Sidebar />
-          <Component {...pageProps} />
+          <div className="min-w-0 flex-1">
+            <Component {...pageProps} />
+          </div>
         </div>
       </div>
     </UserProvider>
