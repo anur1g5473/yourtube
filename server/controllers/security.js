@@ -177,7 +177,7 @@ export const beginLoginVerification = async (req, res) => {
       !forceChallenge &&
       !locationChanged
     ) {
-      const sessionId = crypto.randomUUID();
+      const sessionId = trusted.sessionId || crypto.randomUUID();
       trusted.sessionId = sessionId;
       trusted.lastUsedAt = now;
       trusted.lastCity = location.city;
