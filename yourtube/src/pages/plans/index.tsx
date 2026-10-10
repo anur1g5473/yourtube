@@ -39,6 +39,7 @@ type RazorpaySuccess = {
 };
 type RazorpayInstance = {
   open: () => void;
+  close: () => void;
   on: (event: string, callback: (response: { error?: { description?: string } }) => void) => void;
 };
 type RazorpayOptions = {
@@ -176,8 +177,12 @@ export default function PlansPage() {
         },
       });
       checkout.on("payment.failed", (event) => {
-        setErrorMessage(event.error?.description || "Payment failed. No plan was activated.");
+        setNotice("");
+        setErrorMessage(event.error?.description
+          ? `Payment failed: ${event.error.description}. No plan was activated.`
+          : "Payment failed. No plan was activated.");
         setBusyPlan(null);
+        window.setTimeout(() => checkout.close(), 300);
       });
       checkout.open();
     } catch (error: any) {
