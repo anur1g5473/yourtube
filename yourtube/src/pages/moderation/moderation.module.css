@@ -1,0 +1,108 @@
+.page {
+  --bg: #F5F1E8;
+  --surface: #FFFFFF;
+  --text: #1C1B22;
+  --text-muted: #5E5C66;
+  --border: rgba(28, 27, 34, 0.15);
+  --primary: #185ADB;
+  --on-primary: #FFFFFF;
+  min-height: calc(100vh - 4rem);
+  flex: 1;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Archivo", Arial, sans-serif;
+  padding: 2.5rem clamp(1rem, 4vw, 3.5rem);
+}
+
+.container {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.container h1 {
+  margin: 0.4rem 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.intro,
+.reasons {
+  color: var(--text-muted);
+}
+
+.message,
+.report {
+  margin-top: 1.25rem;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.reportList {
+  display: grid;
+  gap: 1rem;
+}
+
+.report {
+  margin-top: 0;
+}
+
+.author {
+  margin: 0;
+  font-size: 0.87rem;
+  font-weight: 700;
+}
+
+.comment {
+  margin: 1rem 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.reasons {
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.actions button {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.6rem 0.9rem;
+}
+
+.approve {
+  border-color: var(--primary) !important;
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.remove {
+  background: var(--surface);
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1.5rem 0.9rem;
+  }
+}

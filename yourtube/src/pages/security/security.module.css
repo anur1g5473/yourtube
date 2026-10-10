@@ -1,0 +1,262 @@
+.page {
+  --bg: #F5F1E8;
+  --surface: #FFFFFF;
+  --text: #1C1B22;
+  --text-muted: #5E5C66;
+  --border: rgba(28, 27, 34, 0.15);
+  --primary: #185ADB;
+  --on-primary: #FFFFFF;
+  min-height: calc(100vh - 4rem);
+  flex: 1;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Archivo", Arial, sans-serif;
+  padding: 2.5rem clamp(1rem, 4vw, 3.5rem);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.container h1,
+.event h2 {
+  font-family: "Manrope", Arial, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.container h1 {
+  margin: 0.4rem 0;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.intro,
+.empty,
+.event p,
+.event dd {
+  color: var(--text-muted);
+}
+
+.empty,
+.error {
+  margin-top: 1.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.empty button {
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+}
+
+.error {
+  border-left: 5px solid var(--primary);
+}
+
+.eventList {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.phoneSection {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.phoneSection h2 {
+  margin: 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.phoneSection p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.phoneForm {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.phoneForm label {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.phoneFormRow {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.phoneFormRow input {
+  min-width: 0;
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  padding: 0.7rem 0.8rem;
+}
+
+.phoneFormRow input:focus-visible,
+.phoneFormRow button:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.phoneFormRow button {
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.7rem 0.9rem;
+}
+
+.phoneFormRow button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.phoneNotice {
+  color: var(--text) !important;
+  font-weight: 600;
+}
+
+.deviceList {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.deviceList > h2,
+.eventList > h2 {
+  margin: 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.device {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 1.1rem 1.25rem;
+}
+
+.device h3 {
+  margin: 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: 1rem;
+}
+
+.device p {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.device button {
+  flex: 0 0 auto;
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.65rem 0.9rem;
+}
+
+.device button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.event {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.event h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  text-transform: capitalize;
+}
+
+.event p {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+}
+
+.device {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.event dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0 0;
+}
+
+.event dt {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.event dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+  font-size: 0.87rem;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1.5rem 0.9rem;
+  }
+
+  .event dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .phoneFormRow {
+    flex-direction: column;
+  }
+}

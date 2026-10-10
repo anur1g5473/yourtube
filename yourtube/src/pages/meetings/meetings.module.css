@@ -1,0 +1,151 @@
+.page {
+  --bg: #F5F1E8;
+  --surface: #FFFFFF;
+  --text: #1C1B22;
+  --text-muted: #5E5C66;
+  --border: rgba(28, 27, 34, 0.15);
+  --primary: #185ADB;
+  --on-primary: #FFFFFF;
+  min-height: calc(100vh - 4rem);
+  flex: 1;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Archivo", Arial, sans-serif;
+  padding: 2.5rem clamp(1rem, 4vw, 3.5rem);
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.container h1,
+.card h2 {
+  font-family: "Manrope", Arial, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.container h1 {
+  margin: 0.4rem 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.intro,
+.card p,
+.note,
+.signIn {
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.card {
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 1.5rem;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.card form {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.card label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.card input {
+  min-width: 0;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  padding: 0.75rem;
+}
+
+.card button,
+.signIn button {
+  min-height: 42px;
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.65rem 1rem;
+}
+
+.card > button {
+  margin-top: 1rem;
+}
+
+.card button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.signIn {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.signIn button {
+  min-height: auto;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  padding: 0;
+  text-decoration: underline;
+}
+
+.note {
+  margin-top: 2rem;
+  border-top: 1.5px solid var(--border);
+  padding-top: 1rem;
+  font-size: 0.82rem;
+}
+
+.error {
+  margin-top: 1rem;
+  border: 1.5px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 0.8rem 1rem;
+}
+
+@media (max-width: 680px) {
+  .page {
+    padding: 1.5rem 0.9rem;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}

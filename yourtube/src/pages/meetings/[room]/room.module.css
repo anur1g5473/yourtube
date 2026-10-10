@@ -1,0 +1,190 @@
+.page {
+  --bg: #F5F1E8;
+  --surface: #FFFFFF;
+  --text: #1C1B22;
+  --text-muted: #5E5C66;
+  --border: rgba(28, 27, 34, 0.15);
+  --primary: #185ADB;
+  --on-primary: #FFFFFF;
+  flex: 1;
+  min-height: calc(100vh - 4rem);
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Archivo", Arial, sans-serif;
+  padding: 1rem clamp(0.75rem, 2vw, 1.5rem) 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.header h1 {
+  margin: 0.15rem 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.status,
+.disclaimer,
+.participants {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.meetingMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.meetingMeta button,
+.action,
+.leave {
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.6rem 0.85rem;
+}
+
+.call {
+  overflow: hidden;
+  height: min(72vh, 780px);
+  min-height: 420px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: #151515;
+}
+
+.embed {
+  width: 100%;
+  height: 100%;
+}
+
+.copyStatus {
+  margin: 0 0 0.6rem;
+  color: var(--primary);
+  font-size: 0.82rem;
+}
+
+.participants {
+  margin-top: 0.65rem;
+}
+
+.hostControls {
+  margin-top: 0.9rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.9rem 1rem;
+}
+
+.hostControls h2 {
+  margin: 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: 1rem;
+}
+
+.hostActions,
+.hostParticipants li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hostActions {
+  margin-top: 0.65rem;
+}
+
+.hostActions button,
+.hostParticipants button {
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
+}
+
+.hostActions button:hover,
+.hostParticipants button:hover {
+  border-color: var(--primary);
+}
+
+.hostParticipants {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hostParticipants li {
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+}
+
+.hostParticipants li span {
+  flex: 1;
+  min-width: 8rem;
+  font-size: 0.85rem;
+}
+
+.disclaimer {
+  margin-top: 0.65rem;
+  line-height: 1.5;
+}
+
+.leave {
+  margin-top: 0.8rem;
+}
+
+.notice {
+  max-width: 36rem;
+  margin: 3rem auto 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .meetingMeta {
+    flex-wrap: wrap;
+  }
+
+  .call {
+    height: 68vh;
+    min-height: 340px;
+  }
+}

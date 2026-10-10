@@ -1,0 +1,126 @@
+.page {
+  --bg: #F5F1E8;
+  --surface: #FFFFFF;
+  --text: #1C1B22;
+  --text-muted: #5E5C66;
+  --border: rgba(28, 27, 34, 0.15);
+  --primary: #185ADB;
+  --on-primary: #FFFFFF;
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Archivo", Arial, sans-serif;
+  padding: 1.25rem;
+}
+
+.card {
+  width: min(100%, 28rem);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.card h1 {
+  margin: 0.45rem 0 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: clamp(1.75rem, 5vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.intro {
+  margin: 0.85rem 0 1.5rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.intro strong {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.form label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.form input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.35rem;
+  letter-spacing: 0.3em;
+  padding: 0.75rem 0.9rem;
+}
+
+.form input:focus-visible,
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.textButton:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.primaryButton,
+.secondaryButton,
+.textButton {
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+}
+
+.primaryButton {
+  border: 1.5px solid var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.secondaryButton {
+  width: 100%;
+  margin-top: 0.75rem;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.textButton {
+  width: 100%;
+  margin-top: 0.55rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.error {
+  margin: 0.25rem 0;
+  color: var(--primary);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}

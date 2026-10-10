@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: yourtube-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    disk:
+      name: yourtube-media
+      mountPath: /var/data/yourtube
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: UPLOAD_DIR
+        value: /var/data/yourtube
+      - key: DB_URL
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: APP_SESSION_SECRET
+        generateValue: true
+      - key: MEDIA_TOKEN_SECRET
+        generateValue: true

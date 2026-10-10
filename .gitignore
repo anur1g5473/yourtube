@@ -1,0 +1,24 @@
+# Dependencies and generated build output
+**/node_modules/
+yourtube/.next/
+yourtube/out/
+yourtube/.vercel/
+coverage/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local media, databases, and logs
+server/uploads/
+*.mmdb
+*.log
+npm-debug.log*
+
+# Operating system files
+Thumbs.db
+.DS_Store

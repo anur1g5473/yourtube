@@ -1,0 +1,361 @@
+.page {
+  --bg: #F5F1E8;
+  --surface: #FFFFFF;
+  --text: #1C1B22;
+  --text-muted: #5E5C66;
+  --border: rgba(28, 27, 34, 0.15);
+  --primary: #185ADB;
+  --on-primary: #FFFFFF;
+  --accent: #FF8A3D;
+  --on-accent: #1C1B22;
+  min-height: calc(100vh - 4rem);
+  flex: 1;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Archivo", Arial, sans-serif;
+  padding: 2.5rem clamp(1rem, 4vw, 3.5rem);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.intro {
+  max-width: 680px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.intro h1,
+.planHeading h2,
+.currentPlan h2,
+.historySection h2 {
+  font-family: "Manrope", Arial, sans-serif;
+  letter-spacing: -0.035em;
+}
+
+.intro h1 {
+  margin: 0.45rem 0;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.intro > p:last-child,
+.description,
+.currentPlan p:last-child,
+.planHeading p,
+.emptyState,
+.signInPrompt {
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.notice,
+.error {
+  max-width: 900px;
+  margin: 0 auto 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.85rem 1rem;
+}
+
+.notice {
+  border-left: 5px solid var(--primary);
+}
+
+.error {
+  border-left: 5px solid var(--primary);
+  color: var(--text);
+}
+
+.currentPlan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto 2.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 1.25rem 1.5rem;
+}
+
+.currentPlan h2 {
+  margin: 0.35rem 0 0;
+  font-size: 1.35rem;
+  text-transform: capitalize;
+}
+
+.currentPlan p:last-child {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+}
+
+.cancelButton,
+.periodPicker button,
+.chooseButton,
+.signInPrompt button {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.65rem 0.9rem;
+}
+
+.cancelButton:hover,
+.periodPicker button:hover {
+  border-color: var(--primary);
+}
+
+.cancelButton:disabled,
+.chooseButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.planHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 auto 1.25rem;
+  max-width: 1200px;
+}
+
+.planHeading h2,
+.historySection h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.planHeading p {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+}
+
+.periodPicker {
+  display: flex;
+  gap: 0.35rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.25rem;
+}
+
+.periodPicker button {
+  border-color: transparent;
+  padding: 0.5rem 0.75rem;
+}
+
+.periodPicker .periodActive {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.planCard {
+  display: flex;
+  min-height: 355px;
+  flex-direction: column;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.planCard.featured {
+  border: 2px solid var(--primary);
+}
+
+.planName {
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.description {
+  min-height: 3rem;
+  margin: 0.5rem 0 1rem;
+  font-size: 0.88rem;
+}
+
+.price {
+  margin: 0;
+  font-family: "Manrope", Arial, sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.price span {
+  color: var(--text-muted);
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.saving {
+  min-height: 1.2rem;
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.features {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1.1rem 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.features li::before {
+  content: "✓";
+  margin-right: 0.5rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.chooseButton {
+  width: 100%;
+  margin-top: auto;
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.chooseButton:not(:disabled):hover {
+  filter: brightness(0.92);
+}
+
+.historySection {
+  margin-top: 3rem;
+}
+
+.historySection h2 {
+  margin-bottom: 1rem;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tableWrap th,
+.tableWrap td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.8rem 1rem;
+}
+
+.tableWrap th {
+  font-size: 0.78rem;
+}
+
+.tableWrap td {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.tableWrap td button {
+  border: 1.5px solid var(--primary);
+  border-radius: 7px;
+  background: var(--primary);
+  color: var(--on-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.45rem 0.65rem;
+}
+
+.tableWrap td button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.emptyState {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 1rem;
+}
+
+.signInPrompt {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.signInPrompt button {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  padding: 0.2rem;
+  text-decoration: underline;
+}
+
+@media (max-width: 1050px) {
+  .planGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1.5rem 0.9rem;
+  }
+
+  .planHeading,
+  .currentPlan {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .periodPicker {
+    width: 100%;
+  }
+
+  .periodPicker button {
+    flex: 1;
+    padding-inline: 0.4rem;
+  }
+
+  .planGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .planCard {
+    min-height: auto;
+  }
+}
