@@ -1,13 +1,20 @@
 import { Check, FileVideo, Upload, X } from "lucide-react";
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Progress } from "./ui/progress";
 import axiosInstance from "@/lib/axiosinstance";
 
-const VideoUploader = ({ channelId, channelName }: any) => {
+type VideoUploaderProps = {
+  channelId: string;
+  channelName: string;
+  onUploaded: () => Promise<void>;
+};
+
+const VideoUploader = ({ channelId, channelName, onUploaded }: VideoUploaderProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -19,7 +26,9 @@ const VideoUploader = ({ channelId, channelName }: any) => {
   });
   const [videoTitle, setVideoTitle] = useState("");
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadControllerRef = useRef<AbortController | null>(null);
   const handlefilechange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -51,6 +60,7 @@ const VideoUploader = ({ channelId, channelName }: any) => {
     setIsUploading(false);
     setUploadProgress(0);
     setUploadComplete(false);
+    setUploadError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -72,14 +82,18 @@ const VideoUploader = ({ channelId, channelName }: any) => {
   };
   const cancelUpload = () => {
     if (isUploading) {
-      toast.error("Your video upload has been cancelled");
-    }
-  };
-  const handleUpload = async () => {
-    if (!videoFile || !videoTitle.trim()) {
-      toast.error("Please provide file and title");
+      uploadControllerRef.current?.abort();
       return;
     }
+    resetForm();
+  };
+  const handleUpload = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!videoFile || !videoTitle.trim()) {
+      setUploadError("Choose an MP4 video and enter a title before uploading.");
+      return;
+    }
+    setUploadError("");
     const formdata = new FormData();
     formdata.append("file", videoFile);
     formdata.append("videotitle", videoTitle);
@@ -88,31 +102,46 @@ const VideoUploader = ({ channelId, channelName }: any) => {
     Object.entries(qualityFiles).forEach(([field, file]) => {
       if (file) formdata.append(field, file);
     });
+    const uploadController = new AbortController();
+    uploadControllerRef.current = uploadController;
     try {
       setIsUploading(true);
       setUploadProgress(0);
-      const res = await axiosInstance.post("/video/upload", formdata, {
-         headers: {
-    "Content-Type": "multipart/form-data", // ✅ MUST for FormData
-  },
+      await axiosInstance.post("/video/upload", formdata, {
         onUploadProgress: (progresEvent: any) => {
+          if (!progresEvent.total) return;
           const progress = Math.round(
             (progresEvent.loaded * 100) / progresEvent.total
           );
           setUploadProgress(progress);
         },
+        signal: uploadController.signal,
       });
-      toast.success("Upload successfully");
       resetForm();
+      await onUploaded();
+      toast.success("Video uploaded successfully.");
     } catch (error) {
       console.error("Error uploading video:", error);
-      toast.error("There was an error uploading your video. Please try again.");
+      if (uploadController.signal.aborted) {
+        resetForm();
+        toast.message("Video upload cancelled.");
+      } else {
+        const message = axios.isAxiosError(error)
+          ? error.response?.data?.message || error.message
+          : "Please try again.";
+        setUploadError(`Upload failed: ${message}`);
+        toast.error(`Video upload failed: ${message}`);
+      }
     } finally {
+      uploadControllerRef.current = null;
       setIsUploading(false);
     }
   };
   return (
-    <div className="bg-gray-50 rounded-lg p-6">
+    <form
+      className="bg-gray-50 rounded-lg p-6"
+      onSubmit={(event) => void handleUpload(event)}
+    >
       <h2 className="text-xl font-semibold mb-4">Upload a video</h2>
 
       <div className="space-y-4">
@@ -171,6 +200,7 @@ const VideoUploader = ({ channelId, channelName }: any) => {
                   value={videoTitle}
                   onChange={(e) => setVideoTitle(e.target.value)}
                   placeholder="Add a title that describes your video"
+                  required
                   disabled={isUploading || uploadComplete}
                   className="mt-1"
                 />
@@ -218,16 +248,26 @@ const VideoUploader = ({ channelId, channelName }: any) => {
               </div>
             )}
 
+            {uploadError && (
+              <p className="text-sm text-red-700" role="alert">
+                {uploadError}
+              </p>
+            )}
+
             <div className="flex justify-end gap-3">
               {!uploadComplete && (
                 <>
-                  <Button onClick={cancelUpload} disabled={uploadComplete}>
-                    Cancel
+                  <Button
+                    type="button"
+                    onClick={cancelUpload}
+                    disabled={isUploading && !uploadControllerRef.current}
+                  >
+                    {isUploading ? "Cancel upload" : "Cancel"}
                   </Button>
                   <Button
-                    onClick={handleUpload}
+                    type="submit"
                     disabled={
-                      isUploading || !videoTitle.trim() || uploadComplete
+                      isUploading || !videoFile || !videoTitle.trim() || uploadComplete
                     }
                   >
                     {isUploading ? "Uploading..." : "Upload"}
@@ -238,7 +278,7 @@ const VideoUploader = ({ channelId, channelName }: any) => {
           </div>
         )}
       </div>
-    </div>
+    </form>
   );
 };
 

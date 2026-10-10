@@ -1,5 +1,18 @@
 import VideoCard from "./videocard";
-export default function ChannelVideos({ videos }: any) {
+
+type ChannelVideo = {
+  _id: string;
+  videotitle: string;
+  videochanel: string;
+  views?: number;
+  createdAt?: string;
+};
+
+type ChannelVideosProps = {
+  videos: ChannelVideo[];
+};
+
+export default function ChannelVideos({ videos }: ChannelVideosProps) {
   if (videos.length === 0) {
     return (
       <div className="text-center py-12">

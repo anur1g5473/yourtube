@@ -3,9 +3,9 @@ import RelatedVideos from "@/components/RelatedVideos";
 import VideoInfo from "@/components/VideoInfo";
 import Videopplayer from "@/components/Videopplayer";
 import axiosInstance from "@/lib/axiosinstance";
-import { notFound } from "next/navigation";
+import { PlaylistSource, readPlaybackQueue } from "@/lib/playlistPlayback";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const index = () => {
   const router = useRouter();
@@ -13,9 +13,19 @@ const index = () => {
   const [videos, setvideo] = useState<any>(null);
   const [video, setvide] = useState<any>(null);
   const [loading, setloading] = useState(true);
+  const [playlistSource, setPlaylistSource] = useState<PlaylistSource | null>(null);
+  const [playlistQueue, setPlaylistQueue] = useState<string[]>([]);
   useEffect(() => {
     const fetchvideo = async () => {
-      if (!id || typeof id !== "string") return;
+      if (!router.isReady || !id || typeof id !== "string") return;
+      setloading(true);
+      const requestedPlaylist = router.query.playlist;
+      const source: PlaylistSource | null =
+        requestedPlaylist === "liked" || requestedPlaylist === "watch-later"
+          ? requestedPlaylist
+          : null;
+      setPlaylistSource(source);
+      setPlaylistQueue(source ? readPlaybackQueue(source) : []);
       try {
         const res = await axiosInstance.get("/video/getall");
         const video = res.data?.filter((vid: any) => vid._id === id);
@@ -27,8 +37,8 @@ const index = () => {
         setloading(false);
       }
     };
-    fetchvideo();
-  }, [id]);
+    void fetchvideo();
+  }, [id, router.isReady, router.query.playlist]);
   // const relatedVideos = [
   //   {
   //     _id: "1",
@@ -69,8 +79,17 @@ const index = () => {
   const currentVideoIndex = Array.isArray(video)
     ? video.findIndex((item: any) => item._id === videos._id)
     : -1;
-  const nextVideo =
-    currentVideoIndex >= 0 && Array.isArray(video) ? video[currentVideoIndex + 1] : null;
+  const playlistVideoIndex = playlistQueue.indexOf(videos._id);
+  const nextVideo = playlistSource
+    ? playlistVideoIndex >= 0
+      ? playlistQueue
+          .slice(playlistVideoIndex + 1)
+          .map((videoId) => video.find((item: any) => item._id === videoId))
+          .find(Boolean)
+      : null
+    : currentVideoIndex >= 0 && Array.isArray(video)
+      ? video[currentVideoIndex + 1]
+      : null;
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-7xl mx-auto p-4">
@@ -80,7 +99,12 @@ const index = () => {
               video={videos}
               onNext={
                 nextVideo
-                  ? () => void router.push(`/watch/${nextVideo._id}`)
+                  ? () =>
+                      void router.push(
+                        playlistSource
+                          ? `/watch/${nextVideo._id}?playlist=${playlistSource}`
+                          : `/watch/${nextVideo._id}`
+                      )
                   : undefined
               }
             />

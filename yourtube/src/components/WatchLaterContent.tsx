@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { formatDistanceToNow } from "date-fns";
 import { MoreVertical, X, Clock, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import axiosInstance from "@/lib/axiosinstance";
 import { useUser } from "@/lib/AuthContext";
+import { savePlaybackQueue } from "@/lib/playlistPlayback";
 
 export default function WatchLaterContent() {
+  const router = useRouter();
   const [watchLater, setWatchLater] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
@@ -51,6 +54,16 @@ export default function WatchLaterContent() {
     }
   };
 
+  const playAll = () => {
+    const videoIds = watchLater
+      .map((item) => item.videoid?._id)
+      .filter((videoId): videoId is string => typeof videoId === "string");
+    if (videoIds.length === 0) return;
+
+    savePlaybackQueue("watch-later", videoIds);
+    void router.push(`/watch/${videoIds[0]}?playlist=watch-later`);
+  };
+
   if (!user) {
     return (
       <div className="text-center py-12">
@@ -78,7 +91,7 @@ export default function WatchLaterContent() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-600">{watchLater.length} videos</p>
-        <Button className="flex items-center gap-2">
+        <Button type="button" className="flex items-center gap-2" onClick={playAll}>
           <Play className="w-4 h-4" />
           Play all
         </Button>

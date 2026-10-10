@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { formatDistanceToNow } from "date-fns";
 import { MoreVertical, X, ThumbsUp, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
+import { savePlaybackQueue } from "@/lib/playlistPlayback";
 
 export default function LikedVideosContent() {
+  const router = useRouter();
   const [likedVideos, setLikedVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
@@ -50,6 +53,16 @@ export default function LikedVideosContent() {
     }
   };
 
+  const playAll = () => {
+    const videoIds = likedVideos
+      .map((item) => item.videoid?._id)
+      .filter((videoId): videoId is string => typeof videoId === "string");
+    if (videoIds.length === 0) return;
+
+    savePlaybackQueue("liked", videoIds);
+    void router.push(`/watch/${videoIds[0]}?playlist=liked`);
+  };
+
   if (!user) {
     return (
       <div className="text-center py-12">
@@ -79,7 +92,7 @@ export default function LikedVideosContent() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-600">{likedVideos.length} videos</p>
-        <Button className="flex items-center gap-2">
+        <Button type="button" className="flex items-center gap-2" onClick={playAll}>
           <Play className="w-4 h-4" />
           Play all
         </Button>

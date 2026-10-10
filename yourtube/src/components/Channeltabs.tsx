@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "./ui/button";
-const tabs = [
-  { id: "home", label: "Home" },
+
+type ChannelTab = "videos" | "about";
+type ChannelTabsProps = {
+  activeTab: ChannelTab;
+  onTabChange: (tab: ChannelTab) => void;
+};
+
+const tabs: { id: ChannelTab; label: string }[] = [
   { id: "videos", label: "Videos" },
-  { id: "shorts", label: "Shorts" },
-  { id: "playlists", label: "Playlists" },
-  { id: "community", label: "Community" },
   { id: "about", label: "About" },
 ];
-const Channeltabs = () => {
-  const [activeTab, setActiveTab] = useState("videos");
+
+const Channeltabs = ({ activeTab, onTabChange }: ChannelTabsProps) => {
   return (
     <div className="border-b px-4">
       <div className="flex gap-8 overflow-x-auto">
@@ -20,7 +23,8 @@ const Channeltabs = () => {
             className={`px-0 py-4 border-b-2 rounded-none ${
               activeTab === tab.id ? "border-black text-black" : "border-transparent text-gray-600 hover:text-black"
             }`}
-            onClick={() => setActiveTab(tab.id)}
+            aria-pressed={activeTab === tab.id}
+            onClick={() => onTabChange(tab.id)}
           >
             {tab.label}
           </Button>
