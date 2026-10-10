@@ -1,7 +1,12 @@
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { provider, auth } from "./firebase";
-import axiosInstance, { APP_SESSION_STORAGE_KEY, DEVICE_ID_STORAGE_KEY } from "./axiosinstance";
+import axiosInstance, {
+  APP_SESSION_REQUIRED_EVENT,
+  APP_SESSION_RESTORED_EVENT,
+  APP_SESSION_STORAGE_KEY,
+  DEVICE_ID_STORAGE_KEY,
+} from "./axiosinstance";
 import LoginVerificationGate from "@/components/LoginVerificationGate";
 
 const UserContext = createContext();
@@ -22,6 +27,7 @@ export const UserProvider = ({ children }) => {
   const [verificationError, setVerificationError] = useState("");
   const processingUid = useRef(null);
   const verifiedUid = useRef(null);
+  const recoveryUid = useRef(null);
 
   const login = (userdata) => {
     setUser(userdata);
@@ -41,6 +47,7 @@ export const UserProvider = ({ children }) => {
     setVerificationError("");
     processingUid.current = null;
     verifiedUid.current = null;
+    recoveryUid.current = null;
     sessionStorage.removeItem(APP_SESSION_STORAGE_KEY);
     localStorage.removeItem("user");
     try {
@@ -120,6 +127,7 @@ export const UserProvider = ({ children }) => {
       });
       sessionStorage.setItem(APP_SESSION_STORAGE_KEY, response.data.sessionToken);
       verifiedUid.current = loginVerification.firebaseUser.uid;
+      recoveryUid.current = null;
       login(loginVerification.profile);
       setLoginVerification(null);
     } catch (error) {
@@ -207,6 +215,7 @@ export const UserProvider = ({ children }) => {
         processingUid.current = null;
         verifiedUid.current = null;
         sessionStorage.removeItem(APP_SESSION_STORAGE_KEY);
+        recoveryUid.current = null;
         return;
       }
       if (verifiedUid.current !== firebaseUser.uid) {
@@ -215,6 +224,34 @@ export const UserProvider = ({ children }) => {
     });
     return () => unsubscribe();
   }, [startLoginVerification]);
+
+  useEffect(() => {
+    const handleAppSessionRequired = () => {
+      const firebaseUser = auth.currentUser;
+      if (
+        !firebaseUser ||
+        processingUid.current === firebaseUser.uid ||
+        recoveryUid.current === firebaseUser.uid ||
+        loginVerification?.firebaseUser.uid === firebaseUser.uid
+      ) {
+        return;
+      }
+
+      recoveryUid.current = firebaseUser.uid;
+      verifiedUid.current = null;
+      void startLoginVerification(firebaseUser);
+    };
+    const handleAppSessionRestored = () => {
+      recoveryUid.current = null;
+    };
+
+    window.addEventListener(APP_SESSION_REQUIRED_EVENT, handleAppSessionRequired);
+    window.addEventListener(APP_SESSION_RESTORED_EVENT, handleAppSessionRestored);
+    return () => {
+      window.removeEventListener(APP_SESSION_REQUIRED_EVENT, handleAppSessionRequired);
+      window.removeEventListener(APP_SESSION_RESTORED_EVENT, handleAppSessionRestored);
+    };
+  }, [loginVerification, startLoginVerification]);
 
   return (
     <UserContext.Provider

@@ -5,6 +5,21 @@ import { useUser } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
 import styles from "./meetings.module.css";
 
+const getMeetingId = (input: string) => {
+  let candidate = input.trim();
+  if (/^https?:\/\//i.test(candidate)) {
+    try {
+      const inviteUrl = new URL(candidate);
+      const match = inviteUrl.pathname.match(/^\/meetings\/([^/]+)\/?$/);
+      if (!match) return null;
+      candidate = decodeURIComponent(match[1]);
+    } catch {
+      return null;
+    }
+  }
+  return /^[a-f\d]{40}$/i.test(candidate) ? candidate : null;
+};
+
 export default function MeetingsPage() {
   const router = useRouter();
   const { user, handlegooglesignin } = useUser();
@@ -17,12 +32,12 @@ export default function MeetingsPage() {
       setError("Sign in before creating or joining a meeting.");
       return;
     }
-    const safeCode = code.trim().replace(/[^a-zA-Z0-9-]/g, "");
-    if (safeCode.length < 12 || safeCode.length > 80) {
-      setError("Meeting IDs must be between 12 and 80 letters, numbers, or hyphens.");
+    const meetingId = getMeetingId(code);
+    if (!meetingId) {
+      setError("Enter a valid 40-character meeting ID or a YourTube meeting link.");
       return;
     }
-    void router.push(`/meetings/${encodeURIComponent(safeCode)}`);
+    void router.push(`/meetings/${encodeURIComponent(meetingId)}`);
   }
 
   const createMeeting = async () => {

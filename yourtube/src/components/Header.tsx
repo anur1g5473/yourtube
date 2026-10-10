@@ -14,41 +14,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Channeldialogue from "./channeldialogue";
 import { useRouter } from "next/router";
 import { useUser } from "@/lib/AuthContext";
-import axiosInstance from "@/lib/axiosinstance";
 import styles from "./Header.module.css";
 
 const Header = () => {
-  const { user, login, logout, handlegooglesignin } = useUser();
+  const { user, logout, handlegooglesignin } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [isdialogeopen, setisdialogeopen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const router = useRouter();
 
   useEffect(() => {
-    if (user?.preferredTheme === "light" || user?.preferredTheme === "dark") {
-      setTheme(user.preferredTheme);
-      return;
-    }
-    if (!user) {
-      const savedTheme = localStorage.getItem("theme");
-      setTheme(savedTheme === "dark" ? "dark" : "light");
-      return;
-    }
-
-    const istHour = Number(
-      new Intl.DateTimeFormat("en-IN", {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        hourCycle: "h23",
-      }).format(new Date())
-    );
-    const preferredTheme = istHour >= 5 && istHour < 12 ? "light" : "dark";
-    setTheme(preferredTheme);
-    axiosInstance
-      .patch("/user/preferences", { preferredTheme })
-      .then((response) => login(response.data.user))
-      .catch((error) => console.error("Unable to save login-time theme preference:", error));
-  }, [user?._id, user?.preferredTheme]);
+    setTheme(localStorage.getItem("theme") === "dark" ? "dark" : "light");
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -69,23 +46,12 @@ const Header = () => {
     }
   };
 
-  const toggleTheme = async () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    if (!user) return;
-    try {
-      const response = await axiosInstance.patch("/user/preferences", {
-        preferredTheme: nextTheme,
-      });
-      login(response.data.user);
-    } catch (error) {
-      console.error("Unable to save theme preference:", error);
-      window.alert("Your theme changed on this device but could not be saved to your account.");
-    }
+  const toggleTheme = () => {
+    setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
   };
 
   return (
-    <header className={`${styles.header} border-b bg-white px-4 py-2 dark:bg-slate-950 dark:text-white`}>
+    <header className={`${styles.header} border-b bg-background px-4 py-2 text-foreground`}>
       <div className={`${styles.brand} flex items-center gap-4`}>
         <Button variant="ghost" size="icon" className={styles.menuButton}>
           <Menu className="h-6 w-6" />
@@ -110,7 +76,7 @@ const Header = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="rounded-l-full border-r-0 focus-visible:ring-0"
           />
-          <Button type="submit" className="rounded-r-full border border-l-0 bg-gray-50 px-6 text-gray-600 hover:bg-gray-100">
+          <Button type="submit" className="rounded-r-full border border-l-0 bg-secondary px-6 text-secondary-foreground hover:bg-accent">
             <Search className="h-5 w-5" />
           </Button>
         </div>
@@ -126,7 +92,7 @@ const Header = () => {
           <Link href="/plans">
             <Button variant="ghost" size="sm">Plans</Button>
           </Link>
-          <Link href="/meetings" aria-label="Meetings" title="Meetings" className="inline-flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-gray-100">
+          <Link href="/meetings" aria-label="Meetings" title="Meetings" className="inline-flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-accent">
             <VideoIcon className="h-5 w-5" />
             <span>Meetings</span>
           </Link>

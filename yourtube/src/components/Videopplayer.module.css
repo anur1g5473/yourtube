@@ -11,6 +11,14 @@
   margin: 0 auto;
 }
 
+:global(.dark) .player {
+  --bg: #111827;
+  --surface: #1F2937;
+  --text: #F3F4F6;
+  --text-muted: #D1D5DB;
+  --border: #4B5563;
+}
+
 .player.theater {
   max-width: 80rem;
 }

@@ -61,7 +61,7 @@ export const getMeetingToken = async (req, res) => {
       {
         aud: "jitsi",
         iss: "chat",
-        sub: `vpaas-magic-cookie-${config.appId}`,
+        sub: config.appId,
         room: roomId,
         iat: now,
         nbf: now - 10,

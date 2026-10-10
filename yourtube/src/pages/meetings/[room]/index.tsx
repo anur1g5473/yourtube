@@ -50,11 +50,12 @@ export default function MeetingRoomPage() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [callStartedAt, setCallStartedAt] = useState<number | null>(null);
   const [status, setStatus] = useState("Connecting to the meeting service…");
+  const [meetingError, setMeetingError] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   const [canModerate, setCanModerate] = useState(false);
   const [lobbyLocked, setLobbyLocked] = useState(false);
   const room = typeof router.query.room === "string" ? router.query.room : "";
-  const roomIsValid = /^[a-zA-Z0-9-]{12,80}$/.test(room);
+  const roomIsValid = /^[a-f\d]{40}$/i.test(room);
 
   useEffect(() => {
     if (!user || !roomIsValid || !containerRef.current) return;
@@ -178,8 +179,20 @@ export default function MeetingRoomPage() {
         script.addEventListener("load", loadListener, { once: true });
         script.addEventListener("error", errorListener, { once: true });
       } catch (error: any) {
+        const statusCode = error.response?.status;
+        if (statusCode === 400) {
+          setMeetingError("This meeting ID is invalid. Check it and try again.");
+          setStatus("");
+          return;
+        }
+        if (statusCode === 404) {
+          setMeetingError("Meeting not found or expired. Check the ID or ask the host for a new invite.");
+          setStatus("");
+          return;
+        }
         console.error("Unable to authorize meeting:", error);
-        setStatus(error.response?.data?.message || "You are not authorized to join this meeting.");
+        setMeetingError(error.response?.data?.message || "You are not authorized to join this meeting.");
+        setStatus("");
       }
     };
 
@@ -228,19 +241,21 @@ export default function MeetingRoomPage() {
     Math.floor((elapsedSeconds % 3600) / 60)
   ).padStart(2, "0")}:${String(elapsedSeconds % 60).padStart(2, "0")}`;
 
-  if (!user) {
+  if (!roomIsValid) {
     return (
       <main className={styles.page}>
-        <p className={styles.notice}>Sign in to join this meeting.</p>
+        <p className={styles.error} role="alert">
+          This meeting ID is invalid. Enter a valid 40-character YourTube meeting ID or invite link.
+        </p>
+        <button className={styles.action} type="button" onClick={() => void router.push("/meetings")}>Back to meetings</button>
       </main>
     );
   }
 
-  if (!roomIsValid) {
+  if (!user) {
     return (
       <main className={styles.page}>
-        <p className={styles.notice}>This meeting ID is invalid.</p>
-        <button className={styles.action} type="button" onClick={() => void router.push("/meetings")}>Back to meetings</button>
+        <p className={styles.notice}>Sign in to join this meeting.</p>
       </main>
     );
   }
@@ -252,7 +267,7 @@ export default function MeetingRoomPage() {
         <div>
           <p className={styles.eyebrow}>YOURTUBE MEETING</p>
           <h1>Room {room.slice(0, 8)}…</h1>
-          <p className={styles.status} role="status">{status}</p>
+          {status && <p className={styles.status} role="status">{status}</p>}
         </div>
         <div className={styles.meetingMeta}>
           <span>{participants.length + 1} participant{participants.length === 0 ? "" : "s"}</span>
@@ -260,6 +275,7 @@ export default function MeetingRoomPage() {
           <button type="button" onClick={shareInvite}>Copy invite link</button>
         </div>
       </header>
+      {meetingError && <p className={styles.error} role="alert">{meetingError}</p>}
       {copyStatus && <p className={styles.copyStatus} role="status">{copyStatus}</p>}
       <section className={styles.call} aria-label="Video meeting">
         <div className={styles.embed} ref={containerRef} />

@@ -23,7 +23,7 @@ const Sidebar = () => {
   const [isdialogeopen, setisdialogeopen] = useState(false);
   return (
     <>
-    <aside className={`${styles.sidebar} bg-white dark:bg-slate-950`}>
+    <aside className={`${styles.sidebar} bg-card text-card-foreground`}>
       <nav className="space-y-1">
         <Link href="/">
           <Button variant="ghost" className="w-full justify-start">

@@ -15,6 +15,14 @@
   padding: 1.25rem;
 }
 
+:global(.dark) .page {
+  --bg: #111827;
+  --surface: #1F2937;
+  --text: #F3F4F6;
+  --text-muted: #D1D5DB;
+  --border: #4B5563;
+}
+
 .card {
   width: min(100%, 28rem);
   border: 1.5px solid var(--border);

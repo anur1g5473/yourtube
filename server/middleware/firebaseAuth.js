@@ -80,8 +80,8 @@ export async function authenticateFirebase(req, res, next) {
       return res.status(503).json({ message: "Verified application sessions are not configured" });
     }
 
-    const sessionToken = req.get("x-youtube-session") || "";
-    const deviceId = req.get("x-youtube-device") || "";
+    const sessionToken = req.get("x-yourtube-session") || "";
+    const deviceId = req.get("x-yourtube-device") || "";
     if (!sessionToken || !deviceId) {
       return res.status(401).json({ message: "Complete email verification to continue", code: "OTP_REQUIRED" });
     }
